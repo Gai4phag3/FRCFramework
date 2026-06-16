@@ -49,7 +49,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
-import frc.robot.generated.VisionTunerConstants;
+import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.StateMachineSubsystemBase;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.Enums.*;
@@ -73,22 +73,22 @@ public class Drive extends StateMachineSubsystemBase<PathingMode> {
     // private final Vision vision;
 
     // Constraints
-    public static final double ODOMETRY_FREQUENCY_Hz = new CANBus(VisionTunerConstants.DrivetrainConstants.CANBusName)
+    public static final double ODOMETRY_FREQUENCY_Hz = new CANBus(TunerConstants.DrivetrainConstants.CANBusName)
             .isNetworkFD()
                     ? 250.0
                     : 100.0;
     public static final double DRIVE_BASE_RADIUS_m = Units.inchesToMeters(
             Math.max(
                     Math.max(
-                            Math.hypot(VisionTunerConstants.FrontLeft.LocationX,
-                                    VisionTunerConstants.FrontLeft.LocationY),
-                            Math.hypot(VisionTunerConstants.FrontRight.LocationX,
-                                    VisionTunerConstants.FrontRight.LocationY)),
+                            Math.hypot(TunerConstants.FrontLeft.LocationX,
+                                    TunerConstants.FrontLeft.LocationY),
+                            Math.hypot(TunerConstants.FrontRight.LocationX,
+                                    TunerConstants.FrontRight.LocationY)),
                     Math.max(
-                            Math.hypot(VisionTunerConstants.BackLeft.LocationX,
-                                    VisionTunerConstants.BackLeft.LocationY),
-                            Math.hypot(VisionTunerConstants.BackRight.LocationX,
-                                    VisionTunerConstants.BackRight.LocationY))));
+                            Math.hypot(TunerConstants.BackLeft.LocationX,
+                                    TunerConstants.BackLeft.LocationY),
+                            Math.hypot(TunerConstants.BackRight.LocationX,
+                                    TunerConstants.BackRight.LocationY))));
 
     public static final double MAX_VOLTAGE_V = 12.0;
     public static final double MAX_LINEAR_VEL_mps = 4.8; // VisionTunerConstants.kSpeedAt12Volts.in(MetersPerSecond); //
@@ -119,12 +119,12 @@ public class Drive extends StateMachineSubsystemBase<PathingMode> {
             ROBOT_MASS_KG,
             ROBOT_MOI,
             new ModuleConfig(
-                    VisionTunerConstants.FrontLeft.WheelRadius,
-                    VisionTunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
+                    TunerConstants.FrontLeft.WheelRadius,
+                    TunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
                     WHEEL_COF,
                     DCMotor.getKrakenX60Foc(1)
-                            .withReduction(VisionTunerConstants.FrontLeft.DriveMotorGearRatio),
-                    VisionTunerConstants.FrontLeft.SlipCurrent,
+                            .withReduction(TunerConstants.FrontLeft.DriveMotorGearRatio),
+                    TunerConstants.FrontLeft.SlipCurrent,
                     1),
             getModuleTranslations());
 
@@ -167,20 +167,20 @@ public class Drive extends StateMachineSubsystemBase<PathingMode> {
                     // Real robot, instantiate hardware IO implementations
                     instance = new Drive(
                             new GyroIOPigeon2(),
-                            new ModuleIOTalonFX(VisionTunerConstants.FrontLeft),
-                            new ModuleIOTalonFX(VisionTunerConstants.FrontRight),
-                            new ModuleIOTalonFX(VisionTunerConstants.BackLeft),
-                            new ModuleIOTalonFX(VisionTunerConstants.BackRight));
+                            new ModuleIOTalonFX(TunerConstants.FrontLeft),
+                            new ModuleIOTalonFX(TunerConstants.FrontRight),
+                            new ModuleIOTalonFX(TunerConstants.BackLeft),
+                            new ModuleIOTalonFX(TunerConstants.BackRight));
                     break;
                 case SIM:
                     // Sim robot, TODO: instantiate physics sim IO implementations
                     instance = new Drive(
                             new GyroIO() { // TODO: IMPLEMENT sim gyro
                             },
-                            new ModuleIOSim(VisionTunerConstants.FrontLeft),
-                            new ModuleIOSim(VisionTunerConstants.FrontRight),
-                            new ModuleIOSim(VisionTunerConstants.BackLeft),
-                            new ModuleIOSim(VisionTunerConstants.BackRight));
+                            new ModuleIOSim(TunerConstants.FrontLeft),
+                            new ModuleIOSim(TunerConstants.FrontRight),
+                            new ModuleIOSim(TunerConstants.BackLeft),
+                            new ModuleIOSim(TunerConstants.BackRight));
 
                     break;
 
@@ -245,10 +245,10 @@ public class Drive extends StateMachineSubsystemBase<PathingMode> {
     private Drive(GyroIO gyroIO, ModuleIO flModuleIO, ModuleIO frModuleIO, ModuleIO blModuleIO, ModuleIO brModuleIO) {
         super("Drive");
         this.gyroIO = gyroIO;
-        modules[0] = new Module(flModuleIO, 0, VisionTunerConstants.FrontLeft);
-        modules[1] = new Module(frModuleIO, 1, VisionTunerConstants.FrontRight);
-        modules[2] = new Module(blModuleIO, 2, VisionTunerConstants.BackLeft);
-        modules[3] = new Module(brModuleIO, 3, VisionTunerConstants.BackRight);
+        modules[0] = new Module(flModuleIO, 0, TunerConstants.FrontLeft);
+        modules[1] = new Module(frModuleIO, 1, TunerConstants.FrontRight);
+        modules[2] = new Module(blModuleIO, 2, TunerConstants.BackLeft);
+        modules[3] = new Module(brModuleIO, 3, TunerConstants.BackRight);
 
         // Usage reporting for swerve template
         HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
@@ -622,7 +622,7 @@ public class Drive extends StateMachineSubsystemBase<PathingMode> {
         // Calculate module setpoints
         speeds = ChassisSpeeds.discretize(speeds, 0.02);
         SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(speeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, VisionTunerConstants.kSpeedAt12Volts);
+        SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, TunerConstants.kSpeedAt12Volts);
 
         // Log unoptimized setpoints and setpoint speeds
         Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
@@ -745,14 +745,14 @@ public class Drive extends StateMachineSubsystemBase<PathingMode> {
     public static Translation2d[] getModuleTranslations() {
         double i2m = Units.inchesToMeters(1.0);
         return new Translation2d[] {
-                new Translation2d(i2m * VisionTunerConstants.FrontLeft.LocationX,
-                        i2m * VisionTunerConstants.FrontLeft.LocationY),
-                new Translation2d(i2m * VisionTunerConstants.FrontRight.LocationX,
-                        i2m * VisionTunerConstants.FrontRight.LocationY),
-                new Translation2d(i2m * VisionTunerConstants.BackLeft.LocationX,
-                        i2m * VisionTunerConstants.BackLeft.LocationY),
-                new Translation2d(i2m * VisionTunerConstants.BackRight.LocationX,
-                        i2m * VisionTunerConstants.BackRight.LocationY)
+                new Translation2d(i2m * TunerConstants.FrontLeft.LocationX,
+                        i2m * TunerConstants.FrontLeft.LocationY),
+                new Translation2d(i2m * TunerConstants.FrontRight.LocationX,
+                        i2m * TunerConstants.FrontRight.LocationY),
+                new Translation2d(i2m * TunerConstants.BackLeft.LocationX,
+                        i2m * TunerConstants.BackLeft.LocationY),
+                new Translation2d(i2m * TunerConstants.BackRight.LocationX,
+                        i2m * TunerConstants.BackRight.LocationY)
         };
     }
 }

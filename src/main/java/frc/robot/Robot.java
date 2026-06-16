@@ -37,7 +37,7 @@ public class Robot extends LoggedRobot {
     private Drive drive;
     private Elevator elevator;
     private SS superstructure;
-    private Controls controls;
+    private ControlScheme controls;
 
 
     @Override
@@ -160,7 +160,7 @@ public class Robot extends LoggedRobot {
         elevator = Elevator.getInstance();
         drive = Drive.getInstance();
         superstructure = SS.getInstance();
-        controls = new Controls(superstructure, drive);
+        controls = new ControlScheme(superstructure, drive);
     }
 
 }

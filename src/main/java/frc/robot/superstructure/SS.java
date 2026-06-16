@@ -28,12 +28,14 @@ public class SS extends SubsystemBase<SS.Command> {
     }
 
     private enum Scoring {
-        RAISING,
-        READY
+        RAISING,   // drive the elevator toward the score height
+        SETTLING,  // hold at height until it has been stable briefly
+        READY      // at height and settled; ready to score (chain an arm/manipulator step here)
     }
 
     private static final double MANUAL_VOLTS = 2.0;
     private static final double SCORE_LOW_HEIGHT_m = 1.2;
+    private static final double SETTLE_TIME_s = 0.2;
 
     private static SS instance;
 
@@ -41,6 +43,8 @@ public class SS extends SubsystemBase<SS.Command> {
 
     private final Elevator elevator;
     private final Drive drive;
+
+    private double scoreTarget_m = Elevator.MIN_HEIGHT_m;
 
     public static SS getInstance() {
         if (instance == null) {
@@ -88,26 +92,68 @@ public class SS extends SubsystemBase<SS.Command> {
 
     @Override
     protected void handle() {
+        // 1) Resolve the command from the active flags (priority order).
         if (has(Flag.HOME)) {
             setCommand(Command.HOMING);
-            elevator.home();
-        } else if (has(Flag.MANUAL_UP)) {
+        } else if (has(Flag.MANUAL_UP) || has(Flag.MANUAL_DOWN)) {
             setCommand(Command.MANUAL);
-            elevator.manual(MANUAL_VOLTS);
-        } else if (has(Flag.MANUAL_DOWN)) {
-            setCommand(Command.MANUAL);
-            elevator.manual(-MANUAL_VOLTS);
         } else if (has(Flag.SCORE_HIGH)) {
+            scoreTarget_m = Elevator.MAX_HEIGHT_m;
             setCommand(Command.SCORING);
-            setSubstate(elevator.atTarget(Elevator.TOLERANCE_m) ? Scoring.READY : Scoring.RAISING);
-            elevator.trackToHeight(Elevator.MAX_HEIGHT_m);
         } else if (has(Flag.SCORE_LOW)) {
+            scoreTarget_m = SCORE_LOW_HEIGHT_m;
             setCommand(Command.SCORING);
-            setSubstate(elevator.atTarget(Elevator.TOLERANCE_m) ? Scoring.READY : Scoring.RAISING);
-            elevator.trackToHeight(SCORE_LOW_HEIGHT_m);
         } else {
             setCommand(Command.STOWING);
-            elevator.trackToHeight(Elevator.MIN_HEIGHT_m);
+        }
+
+        // 2) Execute the current command.
+        switch (getCommand()) {
+            case HOMING:
+                elevator.home();
+                break;
+            case MANUAL:
+                elevator.manual(has(Flag.MANUAL_UP) ? MANUAL_VOLTS : -MANUAL_VOLTS);
+                break;
+            case SCORING:
+                handleScoring();
+                break;
+            case STOWING:
+                elevator.trackToHeight(Elevator.MIN_HEIGHT_m);
+                break;
+            case IDLE:
+                break;
+        }
+    }
+
+    private void handleScoring() {
+        if (firstLoop()) {
+            setSubstate(Scoring.RAISING);
+        }
+
+        switch ((Scoring) getSubstate()) {
+            case RAISING:
+                elevator.trackToHeight(scoreTarget_m);
+                if (elevator.atTarget(Elevator.TOLERANCE_m)) {
+                    setSubstate(Scoring.SETTLING);   
+                }
+                break;
+
+            case SETTLING:
+                elevator.trackToHeight(scoreTarget_m);
+                if (!elevator.atTarget(Elevator.TOLERANCE_m)) {
+                    setSubstate(Scoring.RAISING);    
+                } else if (substateElapsed(SETTLE_TIME_s)) {
+                    setSubstate(Scoring.READY);    
+                }
+                break;
+
+            case READY:
+                elevator.trackToHeight(scoreTarget_m);
+                if (!elevator.atTarget(Elevator.TOLERANCE_m)) {
+                    setSubstate(Scoring.RAISING);   
+                }
+                break;
         }
     }
 

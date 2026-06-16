@@ -1,24 +1,2 @@
-+ Barge Pullback
-+ Barge Tracking
-+ Barge Auto
-+ 4 pc
-- Speed up tuning for everything (retune)
-- Elevator slaving and acceleration
-- Acc limits perfect and FF based on it
-- Tracking V2
-- Pose reset on scoring
-- Daniels changes
-- Fix auto init on disabled bug
-- 88% drive max vel??
-- SSMotion v2
-- SSFF v2
-- Switch from deprecated function in PerfTracker
-- Fully automate scoring
-- Pose resets on auto (maybe teleop as well)
-- Drive to pose auto
-- Fix starting with coral bug
-- Upgrade Radio firmware to 1.3.0
-- Maybe tracking doesn't start until within a certain distance?
-- View CAN error statement
-- XKeys autobuilder or just multiple AutoLists that we can pick from
-- Fix inventory logic once algae mech is on
+Sim it
+Make it so that in SS theres a thing that shows subsystems active in a command and makes sure other commands can't be activated with that same subsystem.

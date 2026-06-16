@@ -23,7 +23,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.Constants;
-import frc.robot.generated.VisionTunerConstants;
+import frc.robot.generated.TunerConstants;
 import java.util.Queue;
 
 /** IO implementation for Pigeon 2. */
@@ -38,8 +38,8 @@ public class GyroIOPigeon2 implements GyroIO {
 
   public GyroIOPigeon2() {
     pigeon = new Pigeon2(
-        VisionTunerConstants.DrivetrainConstants.Pigeon2Id,
-        VisionTunerConstants.DrivetrainConstants.CANBusName);
+        TunerConstants.DrivetrainConstants.Pigeon2Id,
+        TunerConstants.DrivetrainConstants.CANBusName);
     pigeon.getConfigurator().apply(new Pigeon2Configuration());
     pigeon.getConfigurator().setYaw(0.0);
 

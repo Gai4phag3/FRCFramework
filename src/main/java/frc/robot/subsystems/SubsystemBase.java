@@ -14,6 +14,7 @@ public abstract class SubsystemBase<C extends Enum<C>> {
     private C command;
     private Enum<?> substate;
     private boolean firstLoop = true;
+    private boolean substateFirstLoop = false;
 
     protected SubsystemBase(String name) {
         this.name = name;
@@ -26,6 +27,7 @@ public abstract class SubsystemBase<C extends Enum<C>> {
             substate = null;
             substateTimer.reset();
             firstLoop = true;
+            substateFirstLoop = false;
         }
     }
 
@@ -45,6 +47,7 @@ public abstract class SubsystemBase<C extends Enum<C>> {
         if (substate == null || substate != next) {
             substate = next;
             substateTimer.reset();
+            substateFirstLoop = true;
         }
     }
 
@@ -54,6 +57,19 @@ public abstract class SubsystemBase<C extends Enum<C>> {
 
     protected final boolean isSubstate(Enum<?> s) {
         return substate == s;
+    }
+
+
+    protected final boolean substateInit() {
+        if (substateFirstLoop) {
+            substateFirstLoop = false;
+            return true;
+        }
+        return false;
+    }
+
+    protected final boolean substateElapsed(double seconds) {
+        return substateTimer.time() >= seconds;
     }
 
     protected abstract void inputPeriodic();

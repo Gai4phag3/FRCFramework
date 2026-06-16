@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
-import frc.robot.generated.VisionTunerConstants;
+import frc.robot.generated.TunerConstants;
 import frc.robot.util.Util;
 
 public class PoseFollower {
@@ -16,7 +16,7 @@ public class PoseFollower {
     private double translate_kP = 3.0;
     private double rotate_kP = 2.0;
 
-    private double maxSpeed = VisionTunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+    private double maxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
     private Pose2d targetPose = new Pose2d();
 
     public PoseFollower(Pose2d targetPose, double maxSpeed, double translate_kp, double rotate_kP) {
